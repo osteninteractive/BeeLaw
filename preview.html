@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #222; font-family: 'Segoe UI', system-ui, sans-serif; }
+.game { position: relative; width: 1280px; height: 720px; overflow: hidden; border-radius: 12px; box-shadow: 0 0 60px rgba(0,0,0,.5); }
+.bg { position: absolute; width: 100%; height: 100%; 
+  background: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 30%, #7EC850 50%, #5DA83A 100%);
+  z-index: 0; }
+.bg::before { content: ''; position: absolute; width: 100%; height: 40%; top: 50%;
+  background: radial-gradient(ellipse at 20% 100%, #FFD700 0%, transparent 40%),
+              radial-gradient(ellipse at 50% 100%, #FFA07A 0%, transparent 35%),
+              radial-gradient(ellipse at 80% 100%, #FFD700 0%, transparent 45%); opacity: .6; }
+.bg::after { content: '🌻🌼🌷🌸🌻🌼🌸🌷🌻🌼'; position: absolute; bottom: 80px; font-size: 36px; 
+  letter-spacing: 40px; width: 100%; text-align: center; opacity: .7; }
+.cloud { position: absolute; color: white; font-size: 60px; opacity: .5; z-index: 0; }
+.cloud1 { top: 30px; left: 100px; animation: drift 20s linear infinite; }
+.cloud2 { top: 80px; left: 600px; font-size: 40px; animation: drift 25s linear infinite; }
+.cloud3 { top: 50px; left: 1000px; font-size: 50px; animation: drift 18s linear infinite; }
+@keyframes drift { 0% { transform: translateX(0); } 50% { transform: translateX(50px); } 100% { transform: translateX(0); } }
+.bee { position: absolute; top: 200px; right: 200px; font-size: 60px; z-index: 1;
+  animation: fly 0.4s ease-in-out infinite alternate; }
+@keyframes fly { 0% { transform: translateY(0) scaleY(1); } 100% { transform: translateY(-8px) scaleY(0.85); } }
+.hive { position: absolute; bottom: 100px; left: 100px; font-size: 80px; z-index: 1; opacity: .3; }
+.ui { position: absolute; top: 0; left: 0; z-index: 2; padding: 30px; }
+.panel { background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); border-radius: 16px; padding: 24px 32px; min-width: 320px; color: white; border: 1px solid rgba(255,255,255,0.1); }
+.title { font-size: 28px; font-weight: bold; margin-bottom: 16px; color: #FFE4A0; }
+.stat { font-size: 20px; margin: 8px 0; display: flex; align-items: center; gap: 10px; }
+.bar-wrap { background: rgba(255,255,255,0.1); border-radius: 12px; height: 20px; margin: 8px 0; overflow: hidden; }
+.bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #FFA500, #FFD700); border-radius: 12px; transition: width 1s; }
+.label { font-size: 14px; color: #aaa; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="game">
+  <div class="bg"></div>
+  <div class="cloud cloud1">☁️</div>
+  <div class="cloud cloud2">☁️</div>
+  <div class="cloud cloud3">☁️</div>
+  <div class="hive">🏠</div>
+  <div class="bee">🐝</div>
+  
+  <div class="ui">
+    <div class="panel" id="panel">
+      <div class="title">🐝 BeeLaw</div>
+      <div class="stat"><span>🍯</span> <span id="honey">0</span> miel</div>
+      <div class="bar-wrap">
+        <div class="bar-fill" id="bar" style="width: 0%"></div>
+      </div>
+      <div class="label" id="cap">Capacité: 0 / 5 000</div>
+      <div class="stat"><span>💰</span> <span id="money">0</span> €</div>
+      <div class="stat"><span>🐝</span> <span id="bees">500</span> abeilles</div>
+    </div>
+  </div>
+</div>
+
+<script>
+let miel = 0, argent = 0, abeilles = 500, capa = 5000;
+setInterval(() => {
+  miel += 0.5 * 200 * 1.0 / 5; // 1 tick = 1/5s → prod visible
+  if (miel > capa) miel = capa;
+  argent = Math.floor(miel * 0.1);
+  document.getElementById('honey').textContent = Math.floor(miel);
+  document.getElementById('money').textContent = Math.floor(argent);
+  document.getElementById('bees').textContent = abeilles;
+  document.getElementById('bar').style.width = (miel / capa * 100) + '%';
+  document.getElementById('cap').textContent = 'Capacité: ' + Math.floor(miel) + ' / ' + capa;
+}, 200);
+</script>
+</body>
+</html>
