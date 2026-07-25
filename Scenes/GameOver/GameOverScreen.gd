@@ -3,7 +3,7 @@ extends Panel
 signal ferme
 
 const ARTICLES = preload("res://Scripts/prestige_items.gd").ARTICLES
-var _dol_label: Label
+var _pollen_label: Label
 var _card_container: VBoxContainer
 
 func _init():
@@ -52,12 +52,12 @@ func _ready():
 	vb.add_child(stats)
 	
 	# Dollars
-	_dol_label = Label.new()
-	_dol_label.text = "\U0001f4b5 " + str(GameManager.dollars)
-	_dol_label.add_theme_font_size_override("font_size", 22)
-	_dol_label.add_theme_color_override("font_color", Color(0.4, 1, 0.4))
-	_dol_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vb.add_child(_dol_label)
+	_pollen_label = Label.new()
+	_pollen_label.text = "\U0001f4b5 " + str(GameManager.pollen)
+	_pollen_label.add_theme_font_size_override("font_size", 22)
+	_pollen_label.add_theme_color_override("font_color", Color(0.4, 1, 0.4))
+	_pollen_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vb.add_child(_pollen_label)
 	
 	# Scroll avec upgrades
 	var sc = ScrollContainer.new()
@@ -92,7 +92,7 @@ func _refresh_cards():
 		var niv = GameManager.shop_niveaux.get(a.id, 0)
 		var fini = niv >= a.max
 		var prix = a.prix if not a.get("double", false) else a.prix * int(pow(2, niv))
-		var peut = GameManager.dollars >= prix and not fini
+		var peut = GameManager.pollen >= prix and not fini
 		
 		var card = PanelContainer.new()
 		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -133,7 +133,7 @@ func _refresh_cards():
 		h.add_child(btn)
 
 func _refresh_shop():
-	_dol_label.text = "\U0001f4b5 " + str(GameManager.dollars)
+	_pollen_label.text = "\U0001f4b5 " + str(GameManager.pollen)
 	_refresh_cards()
 
 func _acheter(article_id):
@@ -160,7 +160,7 @@ func _on_restart_click():
 	cc.add_child(cvb)
 	
 	var ct = Label.new()
-	ct.text = "Tout recommencer ?\nLes dollars sont conserv\u00e9s."
+	ct.text = "Tout recommencer ?\nLe pollen est conserve\u00e9s."
 	ct.add_theme_font_size_override("font_size", 20)
 	ct.add_theme_color_override("font_color", Color(1, 1, 1))
 	ct.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

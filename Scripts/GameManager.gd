@@ -1,7 +1,7 @@
 extends Node
 
 signal honey_change(v)
-signal dollars_change(v)
+signal pollen_change(v)
 signal evenement(msg, duree)
 signal biome_change(biome_id)
 
@@ -13,13 +13,13 @@ var stats = {
 	"frelons_tues": 0, "ours_repousses": 0,
 	"fleurs_visitees": 0, "km_parcourus": 0.0,
 	"clics_total": 0, "best_run": 0,
-	"dollars_gagnes": 0, "parties": 0
+	"pollen_total": 0, "parties": 0
 }
 
 # ===================== RESSOURCES =====================
 var honey: int = 0 : set = _set_honey
 var jauge: float = 0.0
-var dollars: int = 0 : set = _set_dollars
+var pollen: int = 0 : set = _set_pollen
 var honey_this_run: int = 0
 
 # ===================== NIVEAUX UPGRADES =====================
@@ -37,7 +37,7 @@ const STATS_DEFAULTS := {
 	"miel_produit": 0, "miel_ouvrieres": 0, "abeilles_nes": 0,
 	"frelons_tues": 0, "ours_repousses": 0, "fleurs_visitees": 0,
 	"km_parcourus": 0.0, "clics_total": 0, "best_run": 0,
-	"dollars_gagnes": 0, "parties": 0, "victoire": false
+	"pollen_total": 0, "parties": 0, "victoire": false
 }
 
 func set_save_path(p: String):
@@ -96,16 +96,15 @@ const BIOMES = [
 
 # ===================== FLEURS v2 =====================
 const FLEURS_DATA = [
-	["pissenlit", "Pissenlit", 0, 1, 1.0, 1, 3.0, 5, "flower_dandelion"],
-	["coquelicot", "Coquelicot", 0, 2, 1.2, 1, 4.0, 8, "flower_coquelicot"],
-	["marguerite", "Marguerite", 0, 2, 1.1, 1, 3.5, 12, "flower_marguerite"],
-	["lavande", "Lavande", 1, 5, 2.0, 2, 8.0, 20, "flower_lavender"],
-	["romarin", "Romarin", 1, 4, 1.8, 2, 7.0, 18, "flower_romarin"],
-	["tournesol", "Tournesol", 2, 8, 1.5, 3, 10.0, 30, "flower_sunflower"],
-	["digitale", "Digitale", 3, 6, 2.5, 3, 12.0, 35, "flower_digitale"],
-	["acacia", "Acacia", 3, 15, 3.0, 4, 20.0, 50, "flower_acacia"],
-	["edelweiss", "Edelweiss", 4, 10, 3.5, 5, 25.0, 80, "flower_edelweiss"],
-	["pommier", "Pommier", 5, 12, 2.0, 3, 15.0, 60, "flower_dandelion"],
+	["pissenlit", "Pissenlit", 0, 1, 1.0, 1, 3.0, 5, 3, "flower_dandelion"],
+	["coquelicot", "Coquelicot", 0, 2, 1.2, 1, 4.0, 8, 5, "flower_coquelicot"],
+	["marguerite", "Marguerite", 0, 2, 1.1, 1, 3.5, 12, 4, "flower_marguerite"],
+	["lavande", "Lavande", 0, 5, 2.0, 2, 8.0, 20, 8, "flower_lavender"],
+	["romarin", "Romarin", 0, 4, 1.8, 2, 7.0, 18, 6, "flower_romarin"],
+	["tournesol", "Tournesol", 0, 8, 1.5, 3, 10.0, 30, 12, "flower_sunflower"],
+	["digitale", "Digitale", 0, 6, 2.5, 3, 12.0, 35, 10, "flower_digitale"],
+	["acacia", "Acacia", 0, 15, 3.0, 4, 20.0, 50, 20, "flower_acacia"],
+	["edelweiss", "Edelweiss", 0, 10, 3.5, 5, 25.0, 80, 15, "flower_edelweiss"],
 ]
 
 func get_fleur_data(idx):
@@ -142,7 +141,7 @@ var lois_votees: Dictionary = {}  # {"id": true}
 const PESTICIDE_IDS: Array = ["imidaclopride", "clothianidine", "thiamethoxame", "acetamipride", "fipronil", "chlorpyriphos", "cypermethrine", "deltamethrine", "sulfoxaflor", "glyphosate", "mancozebe", "lambda", "paraquat"]
 var deputes: int = 0
 
-# Système politique base sur les 13 pesticides dans PESTICIDE_IDS, "nom": "Interdire glyphosate", "pour": "+15% sant\u00e9", "contre": "-20% dollars", "deputes": 5},# ===================== COLLECTION =====================
+# Système politique base sur les 13 pesticides dans PESTICIDE_IDS, "nom": "Interdire glyphosate", "pour": "+15% sant\u00e9", "contre": "-20% pollen", "deputes": 5},# ===================== COLLECTION =====================
 var collection_decouverte: Dictionary = {}  # {"id": true}
 var collection_progression: Dictionary = {}  # {"categorie": total}
 
@@ -206,15 +205,15 @@ func _set_honey(v):
 		var new_t = honey_this_run / 1000
 		if new_t > old_t:
 			var d = new_t - old_t
-			dollars += d
-			stats.dollars_gagnes += d
+			pollen += d
+			stats.pollen_total += d
 		# Vérifier déblocage biome
 		_verifier_biome()
 	honey_change.emit(honey)
 
-func _set_dollars(v):
-	dollars = max(0, v)
-	dollars_change.emit(dollars)
+func _set_pollen(v):
+	pollen = max(0, v)
+	pollen_change.emit(pollen)
 
 func get_multiplicateur_recolte() -> float:
 	var m = 1.0
@@ -353,8 +352,8 @@ func acheter_shop(article_id: String) -> bool:
 		"recompense_ours": prix = 3; max_niv = 10
 		"guerriere_slots": prix = 5; max_niv = 4
 		_: return false
-	if niv >= max_niv or dollars < prix: return false
-	dollars -= prix
+	if niv >= max_niv or pollen < prix: return false
+	pollen -= prix
 	shop_niveaux[article_id] = niv + 1
 	save(); return true
 
@@ -364,7 +363,7 @@ func save():
 	if not file: return
 	file.store_var({
 		"victoire": stats.get("victoire", false),
-"honey": honey, "dollars": dollars,
+"honey": honey, "pollen": pollen,
 		"honey_this_run": honey_this_run,
 		"niveau_clic": niveau_clic,
 		"niveau_vitesse_ouvriere": niveau_vitesse_ouvriere,
@@ -387,7 +386,7 @@ func load_save():
 	var d = file.get_var()
 	if not d: return
 	honey = d.get("honey", 0)
-	dollars = d.get("dollars", 0)
+	pollen = d.get("pollen", 0)
 	honey_this_run = d.get("honey_this_run", 0)
 	niveau_clic = d.get("niveau_clic", 0)
 	niveau_vitesse_ouvriere = d.get("niveau_vitesse_ouvriere", 0)

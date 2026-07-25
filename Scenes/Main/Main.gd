@@ -6,7 +6,7 @@ var _en_vol: int = 0; var _ruche_pos: Vector2 = Vector2(160, 580)
 var _upgrades_instance; var _assemblee_instance; var _gameover_instance
 var _ouvrieres = []; var _pause_overlay; var _est_pause = false
 var _barre_ruche: ProgressBar; var _sante_ruche = 100.0; var _sante_max = 100.0
-var _label_dollars: Label; var _evenement_label: Label; var _skill_buttons = {}
+var _label_pollen: Label; var _evenement_label: Label; var _skill_buttons = {}
 var _perf_label: Label
 var _flower_mgr; var _threat_mgr; var _bee_mgr
 var _gameover_layer: CanvasLayer
@@ -23,11 +23,12 @@ func _ready():
 	
 	_construire(); _spawn_fleurs()
 	GameManager.honey_change.connect(_maj_honey)
-	GameManager.dollars_change.connect(_maj_dollars)
+	GameManager.pollen_change.connect(_maj_pollen)
+	GameManager.pollen_change.connect(_maj_pollen)
 	GameManager.evenement.connect(_on_evenement)
 	GameManager.biome_change.connect(_changer_biome)
 	
-	_maj_honey(GameManager.honey); _maj_dollars(GameManager.dollars)
+	_maj_honey(GameManager.honey); _maj_pollen(GameManager.pollen)
 	_changer_biome(GameManager.biome_actuel)
 
 	# Debug panel (F12)
@@ -60,13 +61,13 @@ func _construire():
 	hs.content_margin_top = 6; hs.content_margin_bottom = 6
 	_honey_label.add_theme_stylebox_override("normal", hs); add_child(_honey_label)
 	
-	# Dollars
-	_label_dollars = Label.new(); _label_dollars.position = Vector2(20, 660)
-	_label_dollars.add_theme_font_size_override("font_size", 20)
-	_label_dollars.add_theme_color_override("font_color", Color(0.4, 1, 0.4))
-	add_child(_label_dollars)
+	# Pollen
+	_label_pollen = Label.new(); _label_pollen.position = Vector2(20, 660)
+	_label_pollen.add_theme_font_size_override("font_size", 20)
+	_label_pollen.add_theme_color_override("font_color", Color(1, 0.9, 0.2))
+	add_child(_label_pollen)
 	
-	# Barre de progression dollars
+	# (progression desactivee)
 	var pb = ProgressBar.new()
 	pb.name = "ProgDollars"; pb.max_value = 1000
 	pb.value = GameManager.honey_this_run % 1000
@@ -282,7 +283,7 @@ func _on_restart():
 	add_child(confirm)
 	
 	var ct = Label.new()
-	ct.text = "Tout recommencer ?\nLes dollars sont conserv\u00e9s."
+	ct.text = "Tout recommencer ?\nLe pollen est conserve\u00e9s."
 	ct.add_theme_font_size_override("font_size", 22)
 	ct.add_theme_color_override("font_color", Color(1, 1, 1))
 	ct.position = Vector2(460, 300)
@@ -342,8 +343,8 @@ func _maj_honey(_v):
 	var pl = get_node_or_null("ProgLabel")
 	if pl: pl.text = "Next $: " + str(1000 - (GameManager.honey_this_run % 1000)) + " honey"
 
-func _maj_dollars(_v):
-	if _label_dollars: _label_dollars.text = "💵 " + str(GameManager.dollars)
+func _maj_pollen(v):
+	if _label_pollen: _label_pollen.text = "Pollen: " + str(GameManager.pollen)
 
 func _changer_biome(biome_id):
 	var bg = get_node_or_null("TextureRect")

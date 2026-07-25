@@ -86,7 +86,7 @@ func _peut_acheter() -> bool:
 	var niv = _get_niveau()
 	if _is_prestige and niv >= GameManager.shop_niveaux.get(_id, 0): niv = _get_niveau()
 	if niv >= _get_max(): return false
-	if _is_prestige: return GameManager.dollars >= _get_prix()
+	if _is_prestige: return GameManager.pollen >= _get_prix()
 	return GameManager.honey >= _get_prix()
 
 func _est_max() -> bool:
@@ -113,8 +113,8 @@ func _on_click(event: InputEvent):
 func _acheter():
 	var prix = _get_prix()
 	if _is_prestige:
-		if GameManager.dollars < prix: return
-		GameManager.dollars -= prix
+		if GameManager.pollen < prix: return
+		GameManager.pollen -= prix
 		GameManager.shop_niveaux[_id] = GameManager.shop_niveaux.get(_id, 0) + 1
 		GameManager.save()
 	else:

@@ -116,7 +116,7 @@ func _draw_category(name: String, cat: Dictionary, x: int, y: int):
 
 func _on_achete(id: String):
 	GameManager.honey_change.emit(GameManager.honey)
-	GameManager.dollars_change.emit(GameManager.dollars)
+	GameManager.pollen_change.emit(GameManager.pollen)
 
 func _on_fermer():
 	ferme.emit()

@@ -104,7 +104,7 @@ func _creer_fleur(biome_fleurs: Array, idx = -1):
 		_fleurs_hp.append(max_hp)
 		_fleurs_max_hp.append(max_hp)
 
-func recolter(idx: int) -> int:
+func recolter(idx: int) -> Dictionary:
 	if idx < 0 or idx >= _fleurs_hp.size() or _fleurs_hp[idx] <= 0: return 0
 	var fd = _fleurs_data[idx]
 	var gain = fd[3]
@@ -135,7 +135,7 @@ func recolter(idx: int) -> int:
 		get_tree().create_timer(temps_repousse).timeout.connect(_regrow.bind(idx))
 	
 	fleur_recoltee.emit(idx, gain)
-	return gain
+	return {"nectar": gain, "pollen": fd[9] if fd.size() > 9 else gain}
 
 func _regrow(idx: int):
 	if idx >= _fleurs_hp.size(): return
