@@ -39,7 +39,14 @@ func _ready():
 	_perf_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5, 0.7))
 	add_child(_perf_label)
 	# Timers
-	for t in [["ft", 60.0, _spawn_frelon], ["bt", 90.0, _spawn_ours], ["st", 1.0, _tick_sante], ["sk", 1.0, _tick_skills]]:
+	var timers = [
+		["ft", 60.0, _spawn_frelon],
+		["bt", 90.0, _spawn_ours],
+		["st", 1.0, _tick_sante],
+	]
+	if GameManager.POWERS_ENABLED:
+		timers.append(["sk", 1.0, _tick_skills])
+	for t in timers:
 		var ti = Timer.new(); ti.wait_time = t[1]; ti.autostart = true; ti.timeout.connect(t[2]); add_child(ti)
 
 func _construire():
