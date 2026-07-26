@@ -40,7 +40,7 @@ const CATEGORIES = {
 		"items": [
 			{"id": "boost_clic", "icone": "\ud83d\udcb0", "nom": "Boost Clic", "desc": "+1/clic permanent", "prix": 2, "max": 10, "prestige": true},
 			{"id": "miel_depart", "icone": "\ud83c\udf6f", "nom": "Miel d\u00e9part", "desc": "+50 honey au d\u00e9part", "prix": 1, "max": 20, "prestige": true},
-			{"id": "ouvriere_depart", "icone": "\ud83d\udca1", "nom": "Ouvri\u00e8re d\u00e9part", "desc": "+1 ouvri\u00e8re au d\u00e9part", "prix": 3, "max": 10, "prestige": true},
+			# {"id": "ouvriere_depart", "icone": "\ud83d\udca1", "nom": "Ouvri\u00e8re d\u00e9part", "desc": "+1 ouvri\u00e8re au d\u00e9part", "prix": 3, "max": 10, "prestige": true},
 		]
 	},
 	"\u2699\ufe0f Prestige": {

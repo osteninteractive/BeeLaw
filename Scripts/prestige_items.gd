@@ -3,7 +3,7 @@
 
 const ARTICLES = [
 	{"id": "boost_clic", "nom": "Boost Clic", "desc": "+1/clic permanent", "prix": 2, "max": 10},
-	{"id": "ouvriere_depart", "nom": "Ouvri\u00e8re d\u00e9part", "desc": "+1 ouvri\u00e8re au d\u00e9part", "prix": 3, "max": 10},
+	# {"id": "ouvriere_depart", "nom": "Ouvri\u00e8re d\u00e9part", "desc": "+1 ouvri\u00e8re au d\u00e9part", "prix": 3, "max": 10},
 	{"id": "miel_depart", "nom": "Miel d\u00e9part", "desc": "+50 honey au d\u00e9part", "prix": 1, "max": 20},
 	{"id": "sante_plus", "nom": "Ruche +", "desc": "+10% sant\u00e9 ruche", "prix": 5, "max": 5},
 	{"id": "ouvriere_slots", "nom": "Slot ouvri\u00e8re", "desc": "+1 max (prix x2/niv)", "prix": 1, "max": 10, "double": true},
