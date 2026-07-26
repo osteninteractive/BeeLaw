@@ -6,6 +6,7 @@ signal honey_change(v)
 signal pollen_change(v)
 signal evenement(msg, duree)
 signal biome_change(biome_id)
+signal ouvriere_achetee
 
 # ===================== STATS =====================
 var stats = {

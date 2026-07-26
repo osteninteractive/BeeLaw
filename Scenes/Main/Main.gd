@@ -26,6 +26,7 @@ func _ready():
 	GameManager.pollen_change.connect(_maj_pollen)
 	GameManager.evenement.connect(_on_evenement)
 	GameManager.biome_change.connect(_changer_biome)
+	GameManager.ouvriere_achetee.connect(_on_ouvriere_achetee)
 	
 	_maj_honey(GameManager.honey); _maj_pollen(GameManager.pollen)
 	_changer_biome(GameManager.biome_actuel)
@@ -353,6 +354,9 @@ func _maj_honey(_v):
 
 func _maj_pollen(v):
 	if _label_pollen: _label_pollen.text = "Pollen: " + str(GameManager.pollen)
+
+func _on_ouvriere_achetee():
+	if _bee_mgr: _bee_mgr.ajouter_ouvriere(false)
 
 func _changer_biome(biome_id):
 	var bg = get_node_or_null("TextureRect")
