@@ -325,6 +325,37 @@ func get_capacite_ouvriere() -> int:
 	return base
 
 # ===================== PRESTIGE =====================
+
+# Reset TOTAL: supprime toute progression, sauvegarde, et reinitialise la memoire
+func reset_all_progress() -> void:
+	# Reinitialiser ressources
+	honey = 0; pollen = 0; honey_this_run = 0
+	# Reinitialiser niveaux
+	niveau_clic = 0; niveau_vitesse_click = 0
+	niveau_vitesse_ouvriere = 0; niveau_capacite_ouvriere = 0
+	niveau_guerriere = 0; niveau_max_butineuse = 0
+	# Reinitialiser unites
+	ouvrieres = 0; ouvriere_specs = {}; guerrieres_actives = 0
+	# Reinitialiser progression
+	niveau_reine = 1; generation = 0; mutations = {}
+	biome_actuel = 0; deputes = 0; lois_votees = {}
+	# Reinitialiser shop et collections
+	shop_niveaux = {}
+	stats = STATS_DEFAULTS.duplicate(true)
+	collection_decouverte = {}; collection_progression = {}
+	# Reinitialiser evenements
+	evenement_actif = {}; timer_evenement = 0
+	prochain_evenement = 120.0 + randf() * 180.0
+	# Reinitialiser timers des pouvoirs
+	for sid in queen_skills.keys():
+		queen_skills[sid].timer = 0
+	# Supprimer la sauvegarde
+	var path = _save_path()
+	if FileAccess.file_exists(path):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+	# Emettre signaux
+	honey_change.emit(honey); pollen_change.emit(pollen)
+
 func restart():
 	var miel_dep = shop_niveaux.get("miel_depart", 0) * 50
 	var ouv_dep = shop_niveaux.get("ouvriere_depart", 0)
