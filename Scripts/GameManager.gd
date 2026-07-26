@@ -420,7 +420,7 @@ func save():
 		"niveau_clic": niveau_clic,
 		"niveau_vitesse_ouvriere": niveau_vitesse_ouvriere,
 		"niveau_capacite_ouvriere": niveau_capacite_ouvriere,
-		"niveau_vitesse_click": niveau_vitesse_click,
+		"niveau_vitesse_click": niveau_vitesse_click, "niveau_guerriere": niveau_guerriere, "niveau_max_butineuse": niveau_max_butineuse,
 		"guerriere_max": shop_niveaux.get("guerriere_slots", 0) + 1,
 		"niveau_reine": niveau_reine, "generation": generation,
 	"langue": langue,
@@ -444,6 +444,8 @@ func load_save():
 	niveau_vitesse_ouvriere = d.get("niveau_vitesse_ouvriere", 0)
 	niveau_capacite_ouvriere = d.get("niveau_capacite_ouvriere", 0)
 	niveau_vitesse_click = d.get("niveau_vitesse_click", 0)
+	niveau_guerriere = d.get("niveau_guerriere", 0)
+	niveau_max_butineuse = d.get("niveau_max_butineuse", 0)
 	niveau_reine = d.get("niveau_reine", 1)
 	generation = d.get("generation", 1)
 	mutations = d.get("mutations", {})

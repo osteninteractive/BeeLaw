@@ -124,10 +124,15 @@ func _acheter() -> bool:
 			"guerriere": succes = GameManager.acheter_guerriere()
 			"max_butineuse": succes = GameManager.acheter_max_butineuse()
 	if not succes: return false
-	_flash_achat()
-	return true
-	
+		_flash_achat()
+		return true
 
+	func _flash_achat():
+		var t = create_tween()
+		t.tween_property(self, "modulate", Color(2, 2, 1, 1), 0.05)
+		t.tween_property(self, "modulate", Color(1, 1, 1, 1), 0.15)
+
+	func _show_tooltip():
 func _show_tooltip():
 	_tooltip = Panel.new()
 	_tooltip.name = "Tooltip"
