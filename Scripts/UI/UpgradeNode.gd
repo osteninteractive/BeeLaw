@@ -124,15 +124,14 @@ func _acheter() -> bool:
 			"guerriere": succes = GameManager.acheter_guerriere()
 			"max_butineuse": succes = GameManager.acheter_max_butineuse()
 	if not succes: return false
-		_flash_achat()
-		return true
+	_flash_achat()
+	return true
 
-	func _flash_achat():
-		var t = create_tween()
-		t.tween_property(self, "modulate", Color(2, 2, 1, 1), 0.05)
-		t.tween_property(self, "modulate", Color(1, 1, 1, 1), 0.15)
+func _flash_achat():
+	var t = create_tween()
+	t.tween_property(self, "modulate", Color(2, 2, 1, 1), 0.05)
+	t.tween_property(self, "modulate", Color(1, 1, 1, 1), 0.15)
 
-	func _show_tooltip():
 func _show_tooltip():
 	_tooltip = Panel.new()
 	_tooltip.name = "Tooltip"
@@ -145,46 +144,25 @@ func _show_tooltip():
 	tbs.content_margin_left = 10; tbs.content_margin_top = 6; tbs.content_margin_right = 10; tbs.content_margin_bottom = 6
 	_tooltip.add_theme_stylebox_override("panel", tbs)
 	_tooltip.position = get_global_mouse_position() + Vector2(20, -40)
-	
 	var tb = VBoxContainer.new(); _tooltip.add_child(tb)
-	
-	var nom_l = Label.new()
-	var niv = _get_niveau()
-	var max_str = "MAX" if _est_max() else str(niv) + " / " + str(_get_max())
-	nom_l.text = _nom + " (" + max_str + ")"
-	nom_l.add_theme_font_size_override("font_size", 14)
-	var col = Color(0.6, 0.5, 0.2) if _est_max() else Color(1, 0.9, 0.3) if _peut_acheter() else Color(0.8, 0.4, 0.4)
-	nom_l.add_theme_color_override("font_color", col)
-	tb.add_child(nom_l)
-	
-	var desc_l = Label.new(); desc_l.text = _desc
-	desc_l.add_theme_font_size_override("font_size", 11)
-	desc_l.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
-	desc_l.autowrap_mode = TextServer.AUTOWRAP_WORD
-	tb.add_child(desc_l)
-	
-	if not _est_max():
-		var p_l = Label.new()
-		var currency = "💵" if _is_prestige else "🍯"
-		p_l.text = "Coût : " + currency + str(_get_prix())
-		p_l.add_theme_font_size_override("font_size", 12)
-		p_l.add_theme_color_override("font_color", Color(0.3, 1, 0.3) if _peut_acheter() else Color(0.8, 0.4, 0.4))
-		tb.add_child(p_l)
-	
+	var nl = Label.new(); nl.text = _nom + " (niv " + str(_get_niveau()) + "/" + str(_get_max()) + ")"
+	nl.add_theme_font_size_override("font_size", 12); nl.add_theme_color_override("font_color", Color(1, 1, 1))
+	tb.add_child(nl)
+	var dl = Label.new(); dl.text = _desc
+	dl.add_theme_font_size_override("font_size", 10); dl.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8))
+	tb.add_child(dl)
+	var pl = Label.new()
+	if _est_max():
+		pl.text = "MAX"; pl.add_theme_color_override("font_color", Color(1, 0.5, 0.2))
+	else:
+		pl.text = "Cout: " + _currency() + str(_get_prix()) + " | " + ("Pollen" if _is_prestige else "Miel")
+		pl.add_theme_color_override("font_color", Color(0.4, 1, 0.4) if _peut_acheter() else Color(1, 0.3, 0.3))
+	pl.add_theme_font_size_override("font_size", 10)
+	tb.add_child(pl)
 	add_child(_tooltip)
 
-func _hide_tooltip():
-	var t = get_node_or_null("Tooltip")
-	if t: t.queue_free()
+func _currency():
+	return "P" if _is_prestige else "M"
 
-func _process(_delta):
-	scale = Vector2(_anim_scale, _anim_scale)
-	# Mise a jour visuelle
-	var peut = _peut_acheter()
-	var est_max = _est_max()
-	var cbs = get_theme_stylebox("panel") as StyleBoxFlat
-	if cbs:
-		if est_max: cbs.border_color = Color(0.3, 0.9, 0.3, 0.8)
-		elif peut: cbs.border_color = Color(1, 0.9, 0.2, 0.8)
-		else: cbs.border_color = Color(0.6, 0.5, 0.2, 0.3)
-		modulate = Color(1, 1, 1, 1) if peut or est_max else Color(0.5, 0.5, 0.5, 0.6)
+func _hide_tooltip():
+	if _tooltip: _tooltip.queue_free()

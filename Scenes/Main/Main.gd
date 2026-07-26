@@ -413,8 +413,13 @@ func _unhandled_input(event):
 func _envoyer_abeille(fleur_idx):
 	if fleur_idx < 0: return
 	_en_vol += 1; GameManager.stats.clics_total += 1
-	var cs = load("res://Assets/Audio/bee_click.mp3")
-	if cs: var cp = AudioStreamPlayer2D.new(); cp.stream = cs; add_child(cp); cp.play(); cp.finished.connect(cp.queue_free)
+	var click_sound = load("res://Assets/Audio/bee_click.mp3")
+	if click_sound:
+		var player = AudioStreamPlayer2D.new()
+		player.stream = click_sound
+		add_child(player)
+		player.play()
+		player.finished.connect(player.queue_free)
 	GameManager.honey_change.emit(GameManager.honey)
 	# La reine parle
 	if GameManager.stats.clics_total % 10 == 0: _parler_reine()
