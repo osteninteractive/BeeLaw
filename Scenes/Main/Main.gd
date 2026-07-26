@@ -195,15 +195,16 @@ func _construire():
 	bulle.add_child(rl)
 	
 	# Queen Skills
-	var sk_pos = Vector2(400, 680)
-	var skills_data = [["cri_royal", "👑 Cri Royal", 1], ["ponte", "🥚 Ponte", 2], ["essaim", "🐝 Essaim", 3]]
-	for sd in skills_data:
-		var b = Button.new(); b.name = "Skill" + str(sd[2]); b.text = sd[1]
-		b.position = sk_pos; b.custom_minimum_size = Vector2(140, 35)
-		b.add_theme_font_size_override("font_size", 11)
-		b.pressed.connect(_use_skill.bind(sd[0]))
-		add_child(b); _skill_buttons[sd[0]] = b
-		sk_pos.x += 150
+	if GameManager.POWERS_ENABLED:
+		var sk_pos = Vector2(400, 680)
+		var skills_data = [["cri_royal", "👑 Cri Royal", 1], ["ponte", "🥚 Ponte", 2], ["essaim", "🐝 Essaim", 3]]
+		for sd in skills_data:
+			var b = Button.new(); b.name = "Skill" + str(sd[2]); b.text = sd[1]
+			b.position = sk_pos; b.custom_minimum_size = Vector2(140, 35)
+			b.add_theme_font_size_override("font_size", 11)
+			b.pressed.connect(_use_skill.bind(sd[0]))
+			add_child(b); _skill_buttons[sd[0]] = b
+			sk_pos.x += 150
 	
 	# Collection button
 	var col_btn = Button.new(); col_btn.text = "🏛 Musée"
