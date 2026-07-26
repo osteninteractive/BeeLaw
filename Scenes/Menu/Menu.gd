@@ -87,11 +87,8 @@ func _ready():
 	add_child(reset)
 
 func _on_reset():
-	var d = DirAccess.open("user://")
-	if d:
-		d.remove("beelaw.save")
-		d.remove("beelaw_upgrades.save")
-	_show_popup("Progress reset!")
+	GameManager.reset_all_progress()
+	_show_popup("Progression reinitialisee")
 
 func _show_popup(msg: String):
 	var p = Label.new()
