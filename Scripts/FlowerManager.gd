@@ -105,7 +105,7 @@ func _creer_fleur(biome_fleurs: Array, idx = -1):
 		_fleurs_max_hp.append(max_hp)
 
 func recolter(idx: int) -> Dictionary:
-	if idx < 0 or idx >= _fleurs_hp.size() or _fleurs_hp[idx] <= 0: return 0
+	if idx < 0 or idx >= _fleurs_hp.size() or _fleurs_hp[idx] <= 0: return {"nectar": 0, "pollen": 0}
 	var fd = _fleurs_data[idx]
 	var gain = fd[3]
 	_fleurs_hp[idx] -= 1

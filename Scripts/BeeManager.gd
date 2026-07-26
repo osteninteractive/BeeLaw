@@ -35,7 +35,8 @@ func _demarrer_cycle(wo):
 		# Recolter la fleur
 		var nectar_fleur = 0
 		if _main._flower_mgr:
-			nectar_fleur = _main._flower_mgr.recolter(fleur_idx)
+			var result = _main._flower_mgr.recolter(fleur_idx)
+			nectar_fleur = result.get("nectar", 0)
 		if nectar_fleur <= 0:
 			# Fleur morte pendant le trajet, retour a la ruche puis nouvelle cible
 			var hive_pos = Vector2(160, 560)

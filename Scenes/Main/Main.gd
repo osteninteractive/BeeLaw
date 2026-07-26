@@ -427,7 +427,8 @@ func _envoyer_abeille(fleur_idx):
 	GameManager.stats.km_parcourus += 0.05
 	var nectar_fleur = 0
 	if _flower_mgr:
-		nectar_fleur = _flower_mgr.recolter(fleur_idx)
+		var result = _flower_mgr.recolter(fleur_idx)
+		nectar_fleur = result.get("nectar", 0)
 	if nectar_fleur <= 0:
 		bee.queue_free(); _en_vol -= 1; return
 	
