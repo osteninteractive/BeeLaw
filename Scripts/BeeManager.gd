@@ -57,7 +57,7 @@ func _demarrer_cycle(wo):
 		
 		wo.modulate = Color(0.8, 0.2, 0.2)
 		var gain = GameManager.get_capacite_ouvriere() * nectar_fleur
-		GameManager.honey += gain
+		GameManager.honey += gain; GameManager.pollen += int(result.get("pollen", 0))
 		GameManager.honey_change.emit(GameManager.honey)
 		GameManager.stats["miel_ouvrieres"] = GameManager.stats.get("miel_ouvrieres", 0) + gain
 		await get_tree().create_timer(0.5).timeout

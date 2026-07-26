@@ -233,9 +233,9 @@ func _construire():
 	]
 
 func _process(delta):
-	GameManager._process_skills(delta)
+	if GameManager.POWERS_ENABLED: GameManager._process_skills(delta)
 	GameManager._process_evenements(delta)
-	_update_skill_buttons()
+	if GameManager.POWERS_ENABLED: _update_skill_buttons()
 	if _perf_label and DEBUG_MODE:
 		var fps = Engine.get_frames_per_second()
 		var nodes = get_tree().get_node_count()
@@ -254,6 +254,7 @@ func _update_skill_buttons():
 			b.text = sk.nom; b.disabled = false
 
 func _use_skill(skill_id):
+	if not GameManager.POWERS_ENABLED: return
 	if _bee_mgr: _bee_mgr.utiliser_skill(skill_id)
 
 func _add_debug():

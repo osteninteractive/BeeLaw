@@ -60,7 +60,7 @@ func spawner(main_parent: Node2D, biome: int):
 func _creer_fleur(biome_fleurs: Array, idx = -1):
 	var fd = _choisir_fleur_pondere(biome_fleurs)
 	var max_hp = int(fd[7])
-	var sprite_id = fd[8]
+	var sprite_id: String = str(fd[9])
 	
 	var area = Area2D.new()
 	var pos = _position_fleur()
@@ -71,7 +71,10 @@ func _creer_fleur(biome_fleurs: Array, idx = -1):
 	
 	var spr = Sprite2D.new(); spr.name = "Sprite2D"
 	var ft = load("res://Assets/Sprites/Flowers/" + sprite_id + ".png")
-	if ft: spr.texture = ft; spr.scale = Vector2(1.2, 1.2)
+	if ft:
+		spr.texture = ft
+		var ts = ft.get_size()
+		spr.scale = Vector2(96.0 / ts.x, 96.0 / ts.y)
 	area.add_child(spr)
 	
 	# Barre de vie
@@ -135,7 +138,7 @@ func recolter(idx: int) -> Dictionary:
 		get_tree().create_timer(temps_repousse).timeout.connect(_regrow.bind(idx))
 	
 	fleur_recoltee.emit(idx, gain)
-	return {"nectar": gain, "pollen": fd[9] if fd.size() > 9 else gain}
+	return {"nectar": gain, "pollen": fd[4]}
 
 func _regrow(idx: int):
 	if idx >= _fleurs_hp.size(): return

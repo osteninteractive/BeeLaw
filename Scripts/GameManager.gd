@@ -1,5 +1,7 @@
 extends Node
 
+const POWERS_ENABLED := false
+
 signal honey_change(v)
 signal pollen_change(v)
 signal evenement(msg, duree)
@@ -108,8 +110,9 @@ const FLEURS_DATA = [
 ]
 
 func get_fleur_data(idx):
+	if idx < 0 or idx >= FLEURS_DATA.size(): return {}
 	var f = FLEURS_DATA[idx]
-	return {"id": f[0], "nom": f[1], "biome": f[2], "nectar": f[3], "pollen": f[4], "rarete": f[5], "temps_pousse": f[6], "pv_max": f[7], "sprite_id": f[8]}
+	return {"id": f[0], "nom": f[1], "biome": f[2], "nectar": f[3], "pollen": f[4], "rarete": f[5], "temps_pousse": f[6], "pv_max": f[7], "sprite_id": f[9]}
 
 func get_fleurs_biome(biome):
 	var r = []
@@ -219,7 +222,7 @@ func get_multiplicateur_recolte() -> float:
 	var m = 1.0
 	if mutations.has("riche"): m += mutations.get("riche", 0) * 0.2
 	if evenement_actif and evenement_actif.id == "floraison": m *= 3.0
-	if queen_skills.essaim.timer > 0: m *= 3.0
+	if POWERS_ENABLED and queen_skills.essaim.timer > 0: m *= 3.0
 	if evenement_actif and evenement_actif.id == "pluie": m *= 1.5
 	return m
 
@@ -227,7 +230,7 @@ func get_vitesse_ouvriere_mult() -> float:
 	var base = get_vitesse_ouvriere()
 	var m = base
 	if mutations.has("rapide"): m -= mutations.get("rapide", 0) * 0.03 * base
-	if queen_skills.cri_royal.timer > 0: m *= 0.5
+	if POWERS_ENABLED and queen_skills.cri_royal.timer > 0: m *= 0.5
 	return max(0.1, m)
 
 func get_pesticide_mult() -> float:
