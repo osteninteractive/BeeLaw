@@ -106,35 +106,26 @@ func _on_unhover():
 
 func _on_click(event: InputEvent):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		if _peut_acheter():
-			_acheter()
+		if _peut_acheter() and _acheter():
 			achete.emit(_id)
 
-func _acheter():
-	var prix = _get_prix()
+func _acheter() -> bool:
+	var succes = false
 	if _is_prestige:
-		if GameManager.pollen < prix: return
-		GameManager.pollen -= prix
-		GameManager.shop_niveaux[_id] = GameManager.shop_niveaux.get(_id, 0) + 1
-		GameManager.save()
+		succes = GameManager.acheter_shop(_id)
 	else:
-		if GameManager.honey < prix: return
-		GameManager.honey -= prix
 		match _id:
-			"clic": GameManager.niveau_clic += 1
-			"vitesse_click": GameManager.niveau_vitesse_click += 1
-			"max": GameManager.acheter_ouvriere()
-			"vitesse_ouvriere": GameManager.niveau_vitesse_ouvriere += 1
-			"capacite_ouvriere": GameManager.niveau_capacite_ouvriere += 1
-			"guerriere": GameManager.niveau_guerriere += 1
-			"max_butineuse": GameManager.niveau_max_butineuse += 1
-		GameManager.save()
-		GameManager.honey_change.emit(GameManager.honey)
+			"clic": succes = GameManager.acheter_clic()
+			"vitesse_click": succes = GameManager.acheter_vitesse_click()
+			"max": succes = GameManager.acheter_ouvriere()
+			"vitesse_ouvriere": succes = GameManager.acheter_vitesse_ouvriere()
+			"capacite_ouvriere": succes = GameManager.acheter_capacite_ouvriere()
+			"guerriere": succes = GameManager.acheter_guerriere()
+			"max_butineuse": succes = GameManager.acheter_max_butineuse()
+	if not succes: return false
+	_flash_achat()
+	return true
 	
-	# Flash
-	var t = create_tween()
-	t.tween_property(self, "modulate", Color(2, 2, 1, 1), 0.05)
-	t.tween_property(self, "modulate", Color(1, 1, 1, 1), 0.15)
 
 func _show_tooltip():
 	_tooltip = Panel.new()

@@ -284,6 +284,23 @@ func _verifier_biome():
 			biome_change.emit(biome_actuel)
 
 # ===================== OUVRIERES =====================
+
+func acheter_clic() -> bool:
+	if niveau_clic >= 5: return false
+	var cout = get_cout_clic()
+	if honey < cout: return false
+	honey -= cout; niveau_clic += 1
+	save(); honey_change.emit(honey)
+	return true
+
+func acheter_max_butineuse() -> bool:
+	if niveau_max_butineuse >= 99: return false
+	var cout = get_cout_max_butineuse()
+	if honey < cout: return false
+	honey -= cout; niveau_max_butineuse += 1
+	save(); honey_change.emit(honey)
+	return true
+
 func acheter_ouvriere() -> bool:
 	var max_atteignable = MAX_OUVRIERES_BASE + shop_niveaux.get("ouvriere_slots", 0)
 	if lois_votees.has("haies"): max_atteignable += 1
