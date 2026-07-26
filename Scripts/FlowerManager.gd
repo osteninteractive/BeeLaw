@@ -14,7 +14,7 @@ func _ready():
 	GameManager.biome_change.connect(_on_biome_change)
 
 func _poids_from_hp(hp: int) -> float:
-	return 100.0 / hp
+	return 100.0 / max(hp, 1)
 
 func _choisir_fleur_pondere(biome_fleurs: Array):
 	var poids = []

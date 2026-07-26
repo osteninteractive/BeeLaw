@@ -34,9 +34,11 @@ func _demarrer_cycle(wo):
 		
 		# Recolter la fleur
 		var nectar_fleur = 0
+		var pollen_fleur = 0
 		if _main._flower_mgr:
-			var result = _main._flower_mgr.recolter(fleur_idx)
-			nectar_fleur = result.get("nectar", 0)
+			var recolte = _main._flower_mgr.recolter(fleur_idx)
+			nectar_fleur = int(recolte.get("nectar", 0))
+			pollen_fleur = int(recolte.get("pollen", 0))
 		if nectar_fleur <= 0:
 			# Fleur morte pendant le trajet, retour a la ruche puis nouvelle cible
 			var hive_pos = Vector2(160, 560)
@@ -57,7 +59,7 @@ func _demarrer_cycle(wo):
 		
 		wo.modulate = Color(0.8, 0.2, 0.2)
 		var gain = GameManager.get_capacite_ouvriere() * nectar_fleur
-		GameManager.honey += gain; GameManager.pollen += int(result.get("pollen", 0))
+		GameManager.honey += gain; GameManager.pollen += pollen_fleur
 		GameManager.honey_change.emit(GameManager.honey)
 		GameManager.stats["miel_ouvrieres"] = GameManager.stats.get("miel_ouvrieres", 0) + gain
 		await get_tree().create_timer(0.5).timeout
