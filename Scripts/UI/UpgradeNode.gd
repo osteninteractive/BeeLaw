@@ -62,6 +62,7 @@ func _get_niveau() -> int:
 
 func _get_max() -> int:
 	match _id:
+		"max": return GameManager.get_max_ouvrieres()
 		"guerriere": return GameManager.get_guerriere_max()
 		"max_butineuse": return 99
 	return _niv_max
