@@ -24,7 +24,6 @@ func _ready():
 	_construire(); _spawn_fleurs()
 	GameManager.honey_change.connect(_maj_honey)
 	GameManager.pollen_change.connect(_maj_pollen)
-	GameManager.pollen_change.connect(_maj_pollen)
 	GameManager.evenement.connect(_on_evenement)
 	GameManager.biome_change.connect(_changer_biome)
 	
