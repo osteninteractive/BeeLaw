@@ -19,9 +19,10 @@ func _ready():
 	# Managers (AVANT _spawn_fleurs)
 	var fm = preload("res://Scripts/FlowerManager.gd").new(); add_child(fm); _flower_mgr = fm
 	var tm = preload("res://Scripts/ThreatManager.gd").new(); add_child(tm); tm.init(self); _threat_mgr = tm
-	var bm = preload("res://Scripts/BeeManager.gd").new(); add_child(bm); bm.init(self); _bee_mgr = bm
 	
 	_construire(); _spawn_fleurs()
+	
+	var bm = preload("res://Scripts/BeeManager.gd").new(); add_child(bm); bm.init(self); _bee_mgr = bm
 	GameManager.honey_change.connect(_maj_honey)
 	GameManager.pollen_change.connect(_maj_pollen)
 	GameManager.evenement.connect(_on_evenement)

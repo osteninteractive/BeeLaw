@@ -57,7 +57,7 @@ func get_cout_vitesse_click() -> int: return 10 * int(pow(5, niveau_vitesse_clic
 
 func get_puissance_clic() -> int: return (1 << niveau_clic) + shop_niveaux.get("boost_clic", 0)
 func get_vitesse_ouvriere() -> float: return [0.5, 0.4, 0.3, 0.22, 0.16, 0.1][clamp(niveau_vitesse_ouvriere, 0, 5)]
-func get_max_butineuse() -> int: return 5 + niveau_max_butineuse
+func get_max_butineuse() -> int: return 9 + niveau_max_butineuse
 func get_cout_max_butineuse() -> int: return 500 * int(pow(3, niveau_max_butineuse))
 
 func get_guerriere_cout() -> int:
