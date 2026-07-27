@@ -339,7 +339,7 @@ func _close_gameover():
 	get_tree().call_deferred("reload_current_scene")
 
 func _play_shoot_sound():
-	var s = load("res://Assets/Audio/shoot.mp3")
+	var s = load("res://Assets/Audio/shoot.wav")
 	if s:
 		var p = AudioStreamPlayer2D.new(); p.stream = s; add_child(p); p.play(); p.finished.connect(p.queue_free)
 
@@ -375,7 +375,7 @@ func _changer_biome(biome_id):
 func _tick_sante():
 	if _est_pause: return
 	var mult = GameManager.get_pesticide_mult()
-	_sante_ruche -= (100.0 / 480.0) * mult  # 8min base
+	_sante_ruche -= (100.0 / 120.0) * mult  # 2min base (4x faster)
 	if _barre_ruche:
 		_barre_ruche.max_value = GameManager.get_vie_ruche_max()
 		_barre_ruche.value = max(0, _sante_ruche)
@@ -415,7 +415,7 @@ func _unhandled_input(event):
 func _envoyer_abeille(fleur_idx):
 	if fleur_idx < 0: return
 	_en_vol += 1; GameManager.stats.clics_total += 1
-	var click_sound = load("res://Assets/Audio/bee_click.mp3")
+	var click_sound = load("res://Assets/Audio/bee_click.wav")
 	if click_sound:
 		var player = AudioStreamPlayer2D.new()
 		player.stream = click_sound

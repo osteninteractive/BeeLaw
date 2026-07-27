@@ -308,12 +308,16 @@ func acheter_ouvriere() -> bool:
 	if honey < COUT_OUVRIERE: return false
 	honey -= COUT_OUVRIERE
 	ouvrieres += 1
+	save()
+	honey_change.emit(honey)
+	ouvriere_achetee.emit()
 	return true
 
 func acheter_vitesse_click() -> bool:
 	var c = get_cout_vitesse_click()
 	if niveau_vitesse_click >= 5 or honey < c: return false
-	honey -= c; niveau_vitesse_click += 1; return true
+	honey -= c; niveau_vitesse_click += 1
+	save(); honey_change.emit(honey); return true
 
 func acheter_guerriere() -> bool:
 	var niv = shop_niveaux.get("guerriere_slots", 0)
@@ -328,13 +332,15 @@ func acheter_vitesse_ouvriere() -> bool:
 	if ouvrieres <= 0: return false
 	var c = get_cout_vitesse_ouvriere()
 	if niveau_vitesse_ouvriere >= 5 or honey < c: return false
-	honey -= c; niveau_vitesse_ouvriere += 1; return true
+	honey -= c; niveau_vitesse_ouvriere += 1
+	save(); honey_change.emit(honey); return true
 
 func acheter_capacite_ouvriere() -> bool:
 	if ouvrieres <= 0: return false
 	var c = get_cout_capacite_ouvriere()
 	if niveau_capacite_ouvriere >= 5 or honey < c: return false
-	honey -= c; niveau_capacite_ouvriere += 1; return true
+	honey -= c; niveau_capacite_ouvriere += 1
+	save(); honey_change.emit(honey); return true
 
 func get_capacite_ouvriere() -> int:
 	var base = 1 + shop_niveaux.get("boost_capacite", 0)
