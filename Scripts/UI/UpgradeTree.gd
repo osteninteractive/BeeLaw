@@ -1,127 +1,266 @@
-extends Panel
+extends Control
 
 signal ferme
 
-var _nodes = {}
-
-const CATEGORIES = {
-	"🐝 Abeilles": {
-		"icone": "🐝",
-		"items": [
-			{"id": "max", "icone": "🐝", "nom": "Ouvri\u00e8re", "desc": "Ajoute une ouvri\u00e8re automatique", "prix": 250, "max": 5},
-			{"id": "vitesse_ouvriere", "icone": "\u26a1", "nom": "Vitesse ouvri\u00e8re", "desc": "Les ouvri\u00e8res volent plus vite", "prix": 100, "max": 5},
-			{"id": "capacite_ouvriere", "icone": "\ud83c\udf3e", "nom": "Capacit\u00e9", "desc": "Chaque ouvri\u00e8re rapporte plus", "prix": 100, "max": 5},
-		]
-	},
-	"\ud83c\udf6d R\u00e9colte": {
-		"icone": "\ud83c\udf6d",
-		"items": [
-			{"id": "clic", "icone": "\u2611", "nom": "Butineuse", "desc": "Puissance de clic augment\u00e9e", "prix": 10, "max": 5},
-			{"id": "vitesse_click", "icone": "\ud83d\udca8", "nom": "Vitesse de clic", "desc": "L'abeille de clic vole plus vite", "prix": 10, "max": 5},
-		]
-	},
-	"\ud83d\udc94 D\u00e9fense": {
-		"icone": "\u2694\ufe0f",
-		"items": [
-			{"id": "guerriere", "icone": "\U0001f535", "nom": "Guerri\u00e8re", "desc": "D\u00e9ploie une abeille guerri\u00e8re suppl\u00e9mentaire", "prix": 500, "max": 99},
-			{"id": "recompense_frelon", "icone": "\ud83d\udc1d", "nom": "Prime frelon", "desc": "+5 honey par frelon tu\u00e9", "prix": 2, "max": 10, "prestige": true},
-			{"id": "recompense_ours", "icone": "\ud83d\udc3b", "nom": "Prime ours", "desc": "+25 honey par ours tu\u00e9", "prix": 3, "max": 10, "prestige": true},
-		]
-	},
-	"\u2764\ufe0f Reine": {
-		"icone": "\ud83d\udc1d",
-		"items": [
-			{"id": "boost_capacite", "icone": "\ud83d\udcaa", "nom": "Boost capacit\u00e9", "desc": "+1 capacit\u00e9 ouvri\u00e8re permanent", "prix": 2, "max": 10, "prestige": true},
-			{"id": "guerriere_slots", "icone": "\ud83d\udee1\ufe0f", "nom": "Guerri\u00e8re +", "desc": "+1 guerri\u00e8re simultan\u00e9e", "prix": 5, "max": 4, "prestige": true},
-		]
-	},
-	"\ud83d\udcb0 \u00c9conomie": {
-		"icone": "\ud83d\udcb0",
-		"items": [
-			{"id": "boost_clic", "icone": "\ud83d\udcb0", "nom": "Boost Clic", "desc": "+1/clic permanent", "prix": 2, "max": 10, "prestige": true},
-			{"id": "miel_depart", "icone": "\ud83c\udf6f", "nom": "Miel d\u00e9part", "desc": "+50 honey au d\u00e9part", "prix": 1, "max": 20, "prestige": true},
-			# {"id": "ouvriere_depart", "icone": "\ud83d\udca1", "nom": "Ouvri\u00e8re d\u00e9part", "desc": "+1 ouvri\u00e8re au d\u00e9part", "prix": 3, "max": 10, "prestige": true},
-		]
-	},
-	"\u2699\ufe0f Prestige": {
-		"icone": "\u2699\ufe0f",
-		"items": [
-			{"id": "sante_plus", "icone": "\u2764\ufe0f", "nom": "Ruche +", "desc": "+10% sant\u00e9 ruche", "prix": 5, "max": 5, "prestige": true},
-			{"id": "ouvriere_slots", "icone": "\ud83d\udee0\ufe0f", "nom": "Slot ouvri\u00e8re", "desc": "+1 max ouvri\u00e8re", "prix": 1, "max": 10, "prestige": true, "double": true},
-		]
-	},
-}
-
-func _init():
-	process_mode = Node.PROCESS_MODE_ALWAYS
-	anchor_right = 1.0; anchor_bottom = 1.0
+var _cam_offset := Vector2.ZERO
+var _cam_zoom := 1.0
+var _dragging := false
+var _drag_start := Vector2.ZERO
+var _cam_start := Vector2.ZERO
+var _confirm_panel: Panel
+var _current_buy_id := ""
 
 func _ready():
-	_resize()
-	if not get_viewport().size_changed.is_connected(_resize):
-		get_viewport().size_changed.connect(_resize)
+	anchor_right = 1.0; anchor_bottom = 1.0
 	
-	# Fond sombre
-	var bg = Panel.new()
-	bg.anchor_right = 1.0; bg.anchor_bottom = 1.0
-	var obs = StyleBoxFlat.new(); obs.bg_color = Color(0.05, 0.04, 0.02, 0.92)
-	bg.add_theme_stylebox_override("panel", obs)
-	add_child(bg)
+	# Fond
+	var bg = ColorRect.new(); bg.anchor_right = 1.0; bg.anchor_bottom = 1.0
+	bg.color = Color(0.1, 0.07, 0.04, 0.95); add_child(bg)
 	
-	# Titre + fermer
-	var top = HBoxContainer.new(); top.position = Vector2(480, 10); add_child(top)
-	var tl = Label.new(); tl.text = "⬆ Am\u00e9liorations"; tl.add_theme_font_size_override("font_size", 20)
-	tl.add_theme_color_override("font_color", Color(0.9, 0.8, 0.2)); top.add_child(tl)
-	var bf = Button.new(); bf.text = "X"; bf.pressed.connect(_on_fermer); top.add_child(bf)
+	# Bouton fermer
+	var close = Button.new(); close.text = "✕"; close.position = Vector2(1220, 10)
+	close.custom_minimum_size = Vector2(40, 40)
+	close.pressed.connect(func(): ferme.emit(); queue_free())
+	close.add_theme_font_size_override("font_size", 20)
+	add_child(close)
 	
-	# Categories en grille centree
-	var center_x = 200
-	var start_y = 70
-	var cat_positions = []
-	var i = 0
-	for cat_name in CATEGORIES.keys():
-		var cat = CATEGORIES[cat_name]
-		var col = i % 3
-		var row = floor(i / 3)
-		var px = center_x + col * 320
-		var py = start_y + row * 200
-		cat_positions.append({"name": cat_name, "x": px, "y": py, "cat": cat})
-		i += 1
+	# Bouton recentrer
+	var ctr = Button.new(); ctr.text = "⌂"; ctr.position = Vector2(1170, 10)
+	ctr.custom_minimum_size = Vector2(40, 40)
+	ctr.pressed.connect(_recenter)
+	ctr.add_theme_font_size_override("font_size", 18)
+	add_child(ctr)
 	
-	for cp in cat_positions:
-		_draw_category(cp.name, cp.cat, cp.x, cp.y)
+	# Conteneur des branches
+	var container = Control.new(); container.name = "TreeContainer"
+	container.position = Vector2(100, 80); add_child(container)
+	
+	_draw_branches(container)
+	_recenter()
 
-func _draw_category(name: String, cat: Dictionary, x: int, y: int):
-	# Titre de categorie
-	var tl = Label.new(); tl.text = cat.icone + " " + name
-	tl.position = Vector2(x + 20, y - 30)
-	tl.add_theme_font_size_override("font_size", 13)
-	tl.add_theme_color_override("font_color", Color(0.8, 0.7, 0.3))
-	add_child(tl)
+func _draw_branches(container: Control):
+	var x := 40.0
+	for branch_name in GameManager.BRANCH_ORDER:
+		var branch_ids = _get_branch_nodes(branch_name)
+		var y := 50.0
+		var root_node: Control = null
+		var first := true
+		for up_id in branch_ids:
+			var node = _create_upgrade_node(up_id, x, y)
+			container.add_child(node)
+			y += 150
+			if first:
+				root_node = node
+				first = false
+			else:
+				_draw_connection(container, root_node, node)
+		x += 380
+
+func _get_branch_nodes(branch_name: String) -> Array:
+	for id in GameManager.UPGRADE_IDS:
+		var info = GameManager.UPGRADE_IDS[id]
+		if info.get("branche") == branch_name and not info.has("parent"):
+			var result = [id]
+			# Find children
+			for child_id in GameManager.UPGRADE_IDS:
+				if GameManager.UPGRADE_IDS[child_id].get("parent") == id:
+					result.append(child_id)
+			return result
+	return []
+
+func _create_upgrade_node(up_id: String, x: float, y: float) -> Control:
+	var card = Panel.new()
+	card.name = "Node_" + up_id
+	card.position = Vector2(x, y)
+	card.custom_minimum_size = Vector2(300, 120)
 	
-	# Items dans la categorie
-	var item_x = x + 10
-	for item in cat.items:
-		var node = preload("res://Scripts/UI/UpgradeNode.gd").new()
-		node.setup(
-			item.id, name, item.icone, item.nom, item.desc,
-			item.prix, item.max, item.get("double", false),
-			item.get("prestige", false)
-		)
-		node.position = Vector2(item_x, y)
-		node.achete.connect(_on_achete)
-		add_child(node)
-		_nodes[item.id] = node
-		item_x += 120
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.15, 0.1, 0.06, 0.95)
+	style.corner_radius_top_left = 8; style.corner_radius_top_right = 8
+	style.corner_radius_bottom_left = 8; style.corner_radius_bottom_right = 8
+	style.border_width_left = 2; style.border_width_top = 2
+	style.border_width_right = 2; style.border_width_bottom = 2
+	card.add_theme_stylebox_override("panel", style)
+	
+	var vb = VBoxContainer.new()
+	vb.anchor_right = 1.0; vb.anchor_bottom = 1.0
+	vb.add_theme_constant_override("separation", 4)
+	card.add_child(vb)
+	
+	# Title
+	var title = Label.new(); title.text = GameManager.UPGRADE_IDS[up_id]["nom"]
+	title.add_theme_font_size_override("font_size", 14)
+	title.add_theme_color_override("font_color", Color(1, 0.9, 0.6))
+	vb.add_child(title)
+	
+	# Level
+	var lvl_label = Label.new(); lvl_label.name = "Level"
+	vb.add_child(lvl_label)
+	
+	# Cost button
+	var btn = Button.new(); btn.name = "BuyBtn"
+	btn.custom_minimum_size = Vector2(280, 32)
+	btn.add_theme_font_size_override("font_size", 12)
+	btn.pressed.connect(func(): _on_buy_click(up_id))
+	vb.add_child(btn)
+	
+	# Block reason
+	var reason = Label.new(); reason.name = "Reason"
+	reason.add_theme_font_size_override("font_size", 10)
+	reason.add_theme_color_override("font_color", Color(1, 0.4, 0.4))
+	reason.visible = false
+	vb.add_child(reason)
+	
+	# Store metadata
+	card.set_meta("upgrade_id", up_id)
+	
+	_refresh_node(card)
+	return card
 
-func _on_achete(id: String):
-	GameManager.honey_change.emit(GameManager.honey)
-	GameManager.pollen_change.emit(GameManager.pollen)
+func _refresh_node(card: Control):
+	var up_id = card.get_meta("upgrade_id")
+	var state = GameManager.get_upgrade_state(up_id)
+	var niv = GameManager.get_upgrade_level(up_id)
+	var max_niv = GameManager.get_upgrade_max_level(up_id)
+	var cost = GameManager.get_upgrade_cost(up_id)
+	
+	var lvl = card.get_node_or_null("VBoxContainer/Level")
+	if lvl: lvl.text = "Niv " + str(niv) + " / " + str(max_niv)
+	
+	var btn = card.get_node_or_null("VBoxContainer/BuyBtn")
+	if btn:
+		match state:
+			"maxed":
+				btn.text = "MAX"; btn.disabled = true
+				btn.add_theme_color_override("font_color", Color(1, 0.5, 0.2))
+			"locked":
+				btn.text = "🔒 Verrouillé"; btn.disabled = true
+			"upgradeable":
+				btn.text = "Améliorer — " + str(cost) + " miel"; btn.disabled = false
+			"available":
+				btn.text = "Acheter — " + str(cost) + " miel"; btn.disabled = false
+			"purchased":
+				btn.text = "Niv " + str(niv) + " — " + str(cost) + " miel"; btn.disabled = false
+			_:
+				btn.text = "Améliorer — " + str(cost) + " miel"; btn.disabled = false
+	
+	var reason = card.get_node_or_null("VBoxContainer/Reason")
+	if reason:
+		var block = GameManager.get_upgrade_block_reason(up_id)
+		reason.text = block if block != "" and state in ["locked", "maxed"] else ""
+		reason.visible = block != "" and state in ["locked", "maxed"]
+	
+	# Border color by state
+	var style = card.get_theme_stylebox("panel", "Panel") as StyleBoxFlat
+	if style:
+		match state:
+			"upgradeable": style.border_color = Color(0.2, 1, 0.2, 0.8)
+			"maxed": style.border_color = Color(1, 0.5, 0.2, 0.8)
+			"locked": style.border_color = Color(0.3, 0.3, 0.3, 0.5)
+			_: style.border_color = Color(0.6, 0.5, 0.3, 0.6)
 
-func _on_fermer():
-	ferme.emit()
-	queue_free()
+func _draw_connection(container: Control, parent: Control, child: Control):
+	var line = Line2D.new(); line.name = "Connection"
+	line.width = 3
+	line.default_color = Color(0.6, 0.5, 0.3, 0.7)
+	var pp = parent.position + Vector2(150, 120)
+	var cp = child.position + Vector2(150, 0)
+	line.points = [pp, Vector2(pp.x, cp.y), cp]
+	container.add_child(line)
+	container.move_child(line, 0)  # behind nodes
 
-func _resize():
-	position = Vector2.ZERO
-	size = get_viewport_rect().size
+func _on_buy_click(up_id: String):
+	if _confirm_panel:
+		_confirm_panel.queue_free()
+	_current_buy_id = up_id
+	
+	var state = GameManager.get_upgrade_state(up_id)
+	if state in ["locked", "maxed"]: return
+	
+	# Confirmation panel
+	_confirm_panel = Panel.new()
+	_confirm_panel.position = Vector2(400, 280)
+	_confirm_panel.custom_minimum_size = Vector2(400, 200)
+	var cstyle = StyleBoxFlat.new(); cstyle.bg_color = Color(0.08, 0.05, 0.03, 0.98)
+	cstyle.corner_radius_top_left = 10; cstyle.corner_radius_top_right = 10
+	cstyle.corner_radius_bottom_left = 10; cstyle.corner_radius_bottom_right = 10
+	_confirm_panel.add_theme_stylebox_override("panel", cstyle)
+	add_child(_confirm_panel)
+	
+	var cvb = VBoxContainer.new(); cvb.anchor_right = 1.0; cvb.anchor_bottom = 1.0
+	cvb.add_theme_constant_override("separation", 10)
+	_confirm_panel.add_child(cvb)
+	
+	var info = GameManager.UPGRADE_IDS[up_id]
+	var niv = GameManager.get_upgrade_level(up_id)
+	var cost = GameManager.get_upgrade_cost(up_id)
+	var desc = GameManager.get_upgrade_description(up_id)
+	
+	var tl = Label.new(); tl.text = info["nom"] + " ?"; tl.add_theme_font_size_override("font_size", 18)
+	tl.add_theme_color_override("font_color", Color(1, 0.9, 0.6)); cvb.add_child(tl)
+	
+	var dl = Label.new(); dl.text = desc; dl.add_theme_font_size_override("font_size", 12)
+	dl.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8)); cvb.add_child(dl)
+	
+	var ll = Label.new(); ll.text = "Niv " + str(niv) + " → " + str(niv + 1) + " | Coût: " + str(cost) + " miel"
+	ll.add_theme_font_size_override("font_size", 14); cvb.add_child(ll)
+	
+	var hb = HBoxContainer.new(); hb.add_theme_constant_override("separation", 20); cvb.add_child(hb)
+	
+	var cancel = Button.new(); cancel.text = "Annuler"; cancel.custom_minimum_size = Vector2(150, 40)
+	cancel.pressed.connect(func(): _confirm_panel.queue_free(); _confirm_panel = null)
+	hb.add_child(cancel)
+	
+	var confirm = Button.new(); confirm.text = "Confirmer"; confirm.custom_minimum_size = Vector2(150, 40)
+	confirm.pressed.connect(func(): _execute_buy(up_id))
+	hb.add_child(confirm)
+
+func _execute_buy(up_id: String):
+	if GameManager.buy_upgrade(up_id):
+		_play_feedback()
+		_refresh_all()
+	if _confirm_panel:
+		_confirm_panel.queue_free()
+		_confirm_panel = null
+
+func _play_feedback():
+	var flash = ColorRect.new(); flash.anchor_right = 1.0; flash.anchor_bottom = 1.0
+	flash.color = Color(0.2, 1, 0.2, 0.3); flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(flash)
+	var tw = create_tween(); tw.tween_property(flash, "modulate:a", 0.0, 0.3)
+	tw.tween_callback(flash.queue_free)
+
+func _refresh_all():
+	for child in get_tree().get_nodes_in_group("upgrade_tree_nodes"):
+		_refresh_node(child)
+	# Also refresh direct children
+	for child in get_children():
+		if child is Panel and child.has_meta("upgrade_id"):
+			_refresh_node(child)
+		elif child.has_node("VBoxContainer"):
+			for grand in child.get_children():
+				if grand is Panel and grand.has_meta("upgrade_id"):
+					_refresh_node(grand)
+
+func _recenter():
+	_cam_offset = Vector2(-50, -40)
+	_cam_zoom = 1.0
+
+func _input(event: InputEvent):
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			_cam_zoom = clamp(_cam_zoom * 1.1, 0.5, 1.5)
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			_cam_zoom = clamp(_cam_zoom / 1.1, 0.5, 1.5)
+		elif event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				_dragging = true; _drag_start = event.position; _cam_start = _cam_offset
+			else:
+				_dragging = false
+	elif event is InputEventMouseMotion and _dragging:
+		_cam_offset = _cam_start + (event.position - _drag_start) / _cam_zoom
+	
+	var container = get_node_or_null("TreeContainer")
+	if container:
+		container.position = _cam_offset
+		container.scale = Vector2(_cam_zoom, _cam_zoom)

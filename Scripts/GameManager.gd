@@ -25,6 +25,125 @@ var jauge: float = 0.0
 var pollen: int = 0 : set = _set_pollen
 var honey_this_run: int = 0
 
+
+# ===================== UPGRADE TREE API =====================
+const UPGRADE_IDS = {
+	"buy_forager": {"nom": "Acheter une butineuse", "branche": "forager"},
+	"forager_speed": {"nom": "Vitesse butineuse", "branche": "forager", "parent": "buy_forager"},
+	"forager_capacity": {"nom": "Capacité butineuse", "branche": "forager", "parent": "buy_forager"},
+	"buy_worker": {"nom": "Acheter une ouvrière", "branche": "worker"},
+	"worker_speed": {"nom": "Vitesse ouvrière", "branche": "worker", "parent": "buy_worker"},
+	"worker_capacity": {"nom": "Capacité ouvrière", "branche": "worker", "parent": "buy_worker"},
+	"buy_warrior": {"nom": "Acheter une guerrière", "branche": "warrior"},
+	"warrior_speed": {"nom": "Vitesse guerrière", "branche": "warrior", "parent": "buy_warrior"},
+	"warrior_damage": {"nom": "Dégâts guerrière", "branche": "warrior", "parent": "buy_warrior"},
+}
+
+const BRANCH_ORDER = ["forager", "worker", "warrior"]
+
+func get_upgrade_level(id: String) -> int:
+	match id:
+		"buy_forager": return niveau_clic
+		"forager_speed": return niveau_vitesse_click
+		"forager_capacity": return 0  # TODO: forager capacity
+		"buy_worker": return ouvrieres
+		"worker_speed": return niveau_vitesse_ouvriere
+		"worker_capacity": return niveau_capacite_ouvriere
+		"buy_warrior": return niveau_guerriere
+		"warrior_speed": return 0  # TODO: warrior speed
+		"warrior_damage": return 0  # TODO: warrior damage
+	return 0
+
+func get_upgrade_max_level(id: String) -> int:
+	match id:
+		"buy_forager": return 9
+		"forager_speed": return 5
+		"forager_capacity": return 5
+		"buy_worker": return get_max_ouvrieres()
+		"worker_speed": return 5
+		"worker_capacity": return 5
+		"buy_warrior": return get_guerriere_max()
+		"warrior_speed": return 5
+		"warrior_damage": return 5
+	return 5
+
+func get_upgrade_cost(id: String) -> int:
+	var niv = get_upgrade_level(id)
+	match id:
+		"buy_forager": return 10 * int(pow(5, niv))
+		"forager_speed": return 10 * int(pow(5, niv))
+		"forager_capacity": return 10 * int(pow(5, niv))
+		"buy_worker": return COUT_OUVRIERE
+		"worker_speed": return get_cout_vitesse_ouvriere()
+		"worker_capacity": return get_cout_capacite_ouvriere()
+		"buy_warrior": return get_guerriere_cout()
+		"warrior_speed": return 500 * int(pow(2, niv))
+		"warrior_damage": return 500 * int(pow(2, niv))
+	return 0
+
+func get_upgrade_prereq(id: String) -> String:
+	return UPGRADE_IDS.get(id, {}).get("parent", "")
+
+func can_buy_upgrade(id: String) -> bool:
+	if get_upgrade_level(id) >= get_upgrade_max_level(id): return false
+	# Check prereq
+	var parent = get_upgrade_prereq(id)
+	if parent != "" and get_upgrade_level(parent) <= 0: return false
+	# Check specific rules
+	match id:
+		"worker_speed", "worker_capacity":
+			if ouvrieres <= 0: return false
+	return honey >= get_upgrade_cost(id)
+
+func buy_upgrade(id: String) -> bool:
+	if not can_buy_upgrade(id): return false
+	var cost = get_upgrade_cost(id)
+	if honey < cost: return false
+	honey -= cost
+	match id:
+		"buy_forager": niveau_clic += 1
+		"forager_speed": niveau_vitesse_click += 1
+		"forager_capacity": pass  # TODO
+		"buy_worker": return acheter_ouvriere()
+		"worker_speed": return acheter_vitesse_ouvriere()
+		"worker_capacity": return acheter_capacite_ouvriere()
+		"buy_warrior": return acheter_guerriere()
+		"warrior_speed": pass  # TODO
+		"warrior_damage": pass  # TODO
+	save(); honey_change.emit(honey)
+	return true
+
+func get_upgrade_state(id: String) -> String:
+	var niv = get_upgrade_level(id)
+	var max_niv = get_upgrade_max_level(id)
+	if niv >= max_niv: return "maxed"
+	var parent = get_upgrade_prereq(id)
+	if parent != "" and get_upgrade_level(parent) <= 0: return "locked"
+	if honey >= get_upgrade_cost(id): return "upgradeable"
+	if niv > 0: return "purchased"
+	return "available"
+
+func get_upgrade_block_reason(id: String) -> String:
+	var state = get_upgrade_state(id)
+	match state:
+		"locked": return "Prerequis non rempli"
+		"maxed": return "Maximum atteint"
+		"available", "purchased": return "Ressources insuffisantes"
+	return ""
+
+func get_upgrade_description(id: String) -> String:
+	match id:
+		"buy_forager": return "Ajoute une butineuse de clic"
+		"forager_speed": return "Les butineuses volent plus vite"
+		"forager_capacity": return "Chaque butineuse rapporte plus"
+		"buy_worker": return "Ajoute une ouvriere automatique"
+		"worker_speed": return "Les ouvrieres travaillent plus vite"
+		"worker_capacity": return "Chaque ouvriere rapporte plus"
+		"buy_warrior": return "Ajoute une guerriere"
+		"warrior_speed": return "Les guerrieres se deplacent plus vite"
+		"warrior_damage": return "Les guerrieres infligent plus de degats"
+	return ""
+
 # ===================== NIVEAUX UPGRADES =====================
 var niveau_clic: int = 0
 var niveau_vitesse_ouvriere: int = 0
