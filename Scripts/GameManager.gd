@@ -124,7 +124,7 @@ func get_fleurs_biome(biome):
 # ===================== OUVRIERES v2 =====================
 var ouvrieres: int = 0
 var ouvriere_specs: Dictionary = {}  # {"butineuse": 0, "gardienne": 0, ...}
-const COUT_OUVRIERE: int = 250
+const COUT_OUVRIERE: int = 100
 const MAX_OUVRIERES_BASE: int = 5
 const MAX_OUVRIERES_TOTAL: int = 15
 func get_guerriere_max() -> int: return 1 + shop_niveaux.get("guerriere_slots", 0)
@@ -294,7 +294,7 @@ func acheter_clic() -> bool:
 	return true
 
 func acheter_max_butineuse() -> bool:
-	if niveau_max_butineuse >= 99: return false
+	if niveau_max_butineuse >= 8: return false
 	var cout = get_cout_max_butineuse()
 	if honey < cout: return false
 	honey -= cout; niveau_max_butineuse += 1
