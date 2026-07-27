@@ -73,6 +73,8 @@ func _construire():
 	_label_pollen = Label.new(); _label_pollen.position = Vector2(20, 660)
 	_label_pollen.add_theme_font_size_override("font_size", 20)
 	_label_pollen.add_theme_color_override("font_color", Color(1, 0.9, 0.2))
+	_label_pollen.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	_label_pollen.add_theme_constant_override("outline_size", 3)
 	add_child(_label_pollen)
 	
 	# (progression desactivee)
@@ -354,7 +356,7 @@ func _maj_honey(_v):
 	if pl: pl.text = "Prochain: " + str(1000 - (GameManager.honey_this_run % 1000)) + " miel"
 
 func _maj_pollen(v):
-	if _label_pollen: _label_pollen.text = "Pollen: " + str(GameManager.pollen)
+	if _label_pollen: _label_pollen.text = "⚛ " + str(GameManager.pollen)
 
 func _on_ouvriere_achetee():
 	if _bee_mgr: _bee_mgr.ajouter_ouvriere(false)
