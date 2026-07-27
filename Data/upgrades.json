@@ -1,0 +1,19 @@
+{
+  "branches": [
+    {
+      "id": "forager",
+      "root": "buy_forager",
+      "children": ["forager_speed", "forager_capacity"]
+    },
+    {
+      "id": "worker",
+      "root": "buy_worker",
+      "children": ["worker_speed", "worker_capacity"]
+    },
+    {
+      "id": "warrior",
+      "root": "buy_warrior",
+      "children": ["warrior_speed", "warrior_damage"]
+    }
+  ]
+}
