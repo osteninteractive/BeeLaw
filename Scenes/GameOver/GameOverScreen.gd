@@ -45,7 +45,7 @@ func _ready():
 	var tot = GameManager.honey_this_run
 	var dols = int(tot / 1000)
 	var stats = Label.new()
-	stats.text = "Honey produit: " + str(tot) + "\\nDollars gagn\u00e9s: +" + str(dols)
+	stats.text = "Miel: " + str(tot) + "\\nPollen: +" + str(dols)
 	stats.add_theme_font_size_override("font_size", 14)
 	stats.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8))
 	stats.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

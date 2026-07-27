@@ -10,7 +10,7 @@ func _ready():
 	if FileAccess.file_exists(test_path):
 		DirAccess.remove_absolute(test_path)
 	GameManager.load_save()
-	GameManager.shop_niveaux = {}; GameManager.honey = 0; GameManager.dollars = 0
+	GameManager.shop_niveaux = {}; GameManager.honey = 0; GameManager.pollen = 0
 	GameManager.honey_this_run = 0; GameManager.ouvrieres = 0; GameManager.niveau_clic = 0
 	GameManager.niveau_vitesse_ouvriere = 0; GameManager.niveau_capacite_ouvriere = 0
 	GameManager.niveau_vitesse_click = 0; GameManager.guerrieres_actives = 0
@@ -129,9 +129,9 @@ func _reset():
 
 func _save():
 	prints("--- SAUVEGARDE ---")
-	GameManager.honey = 500; GameManager.dollars = 10; GameManager.ouvrieres = 3
+	GameManager.honey = 500; GameManager.pollen = 10; GameManager.ouvrieres = 3
 	GameManager.shop_niveaux["miel_depart"] = 1; GameManager.save()
-	GameManager.honey = 0; GameManager.dollars = 0; GameManager.ouvrieres = 0
+	GameManager.honey = 0; GameManager.pollen = 0; GameManager.ouvrieres = 0
 	GameManager.load_save()
 	ok("Honey=500", GameManager.honey == 500); ok("Dollars=10", GameManager.dollars == 10)
 	ok("Ouvr=3", GameManager.ouvrieres == 3)

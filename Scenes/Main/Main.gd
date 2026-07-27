@@ -77,7 +77,7 @@ func _construire():
 	
 	# (progression desactivee)
 	var pb = ProgressBar.new()
-	pb.name = "ProgDollars"; pb.max_value = 1000
+	pb.name = "ProgMiel"; pb.max_value = 1000
 	pb.value = GameManager.honey_this_run % 1000
 	pb.position = Vector2(200, 664); pb.custom_minimum_size = Vector2(250, 16)
 	pb.show_percentage = false
@@ -91,7 +91,7 @@ func _construire():
 	pb.add_theme_stylebox_override("fill", pfl)
 	add_child(pb)
 	var pl = Label.new()
-	pl.name = "ProgLabel"; pl.text = "Next $: 1000 honey"
+	pl.name = "ProgLabel"; pl.text = "Prochain: 1000 miel"
 	pl.position = Vector2(205, 666); pl.add_theme_font_size_override("font_size", 10)
 	pl.add_theme_color_override("font_color", Color(1, 1, 0.8)); add_child(pl)
 	
@@ -348,10 +348,10 @@ func _spawn_blue_bee(target: Vector2):
 
 func _maj_honey(_v):
 	if _honey_label: _honey_label.text = "🍯 " + str(GameManager.honey)
-	var pb = get_node_or_null("ProgDollars")
+	var pb = get_node_or_null("ProgMiel")
 	if pb: pb.value = GameManager.honey_this_run % 1000
 	var pl = get_node_or_null("ProgLabel")
-	if pl: pl.text = "Next $: " + str(1000 - (GameManager.honey_this_run % 1000)) + " honey"
+	if pl: pl.text = "Prochain: " + str(1000 - (GameManager.honey_this_run % 1000)) + " miel"
 
 func _maj_pollen(v):
 	if _label_pollen: _label_pollen.text = "Pollen: " + str(GameManager.pollen)
